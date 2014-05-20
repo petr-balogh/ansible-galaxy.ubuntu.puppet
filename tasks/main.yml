@@ -45,7 +45,22 @@
     - install
     - service
 
+# The puppet agent return codes are interesting
+#
+# 0 = no changes
+# 1 = puppet run already in progress
+# 2 = changes
+# 4 = failures during execution
+# 6 = changes and failures
+#
+# https://github.com/ansible/ansible/blob/devel/test/playbook-failed_when.yml
+# https://github.com/ansible/ansible/blob/devel/test/playbook-changed_when.yml
+#
+# Credit to Alex Schultz github.com/mwhahaha
+
 - name: Force run of puppet agent
   command: /usr/bin/puppet agent apply --test --server={{ puppet_master }} --environment={{ puppet_environment }} --waitforcert {{ puppet_waitforcert }}
+  register: puppet_agent_apply
+  failed_when: not puppet_agent_apply.rc in [0, 2]
   tags:
     - run
