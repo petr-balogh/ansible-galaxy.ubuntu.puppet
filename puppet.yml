@@ -1,0 +1,6 @@
+---
+- name : Puppet agent management
+  hosts : all
+  sudo : True
+  roles:
+    - puppet
