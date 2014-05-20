@@ -59,7 +59,7 @@
 # Credit to Alex Schultz github.com/mwhahaha
 
 - name: Force run of puppet agent
-  command: /usr/bin/puppet agent apply --test --server={{ puppet_master }} --environment={{ puppet_environment }} --waitforcert {{ puppet_waitforcert }}
+  command: /usr/bin/puppet agent apply --test --color=false --server={{ puppet_master }} --environment={{ puppet_environment }} --waitforcert {{ puppet_waitforcert }}
   register: puppet_agent_apply
   failed_when: not puppet_agent_apply.rc in [0, 2]
   tags:
