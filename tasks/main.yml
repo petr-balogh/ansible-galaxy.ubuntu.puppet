@@ -13,7 +13,7 @@
   template: src=repo.j2 dest=/etc/apt.sources.d/puppetlabs.source owner=root group=root mode=0644
   apt: pkg=puppet state={{ item }} update_cache=yes
   with_items:
-    - "{{ puppet_release_rpm_baseurl }}/puppetlabs-release-{{ ansible_distribution_release }}"
+    - "{{ puppet_release_rpm_baseurl }}/puppetlabs-release-{{ ansible_distribution_release }}.deb"
   when: ansible_os_family == 'Debian'
   tags:
     - repo
