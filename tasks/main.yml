@@ -1,6 +1,6 @@
 ---
 - name: Install PuppetLabs release RPM for Fedora or EL derivatives
-  yum:name="{{ item }}.noarch.rpm" state={{ puppet_release_package_state }}
+  yum: name="{{ item }}.noarch.rpm" state={{ puppet_release_package_state }}
   with_items:
     - "{{ puppet_release_rpm_baseurl }}/puppetlabs-release-{% if ansible_distribution == 'Fedora' %}fedora{% else %}el{% endif %}-{{ ansible_distribution_version.split('.')[0] }}"
   when: ansible_os_family == 'RedHat'
@@ -10,7 +10,6 @@
     - packages
 
 - name: Install PuppetLabs release DEB for Debian derivates
-  template: src=repo.j2 dest=/etc/apt.sources.d/puppetlabs.source owner=root group=root mode=0644
   apt: pkg=puppet state={{ item }} update_cache=yes
   with_items:
     - "{{ puppet_release_rpm_baseurl }}/puppetlabs-release-{{ ansible_distribution_release }}.deb"
@@ -23,7 +22,7 @@
 - name: Install puppet via yum
   yum: name={{ item }} state={{ puppet_package_state }}
   with_items:
-    - {{ puppet_package_list }}
+    - "{{ puppet_package_list }}"
   when: ansible_os_family == 'RedHat'
   tags:
     - install
@@ -32,7 +31,7 @@
 - name: Install puppet via apt
   apt: pkg={{ item }} state={{ puppet_package_state }} update_cache=yes
   with_items:
-    - {{ puppet_package_list }}
+    - "{{ puppet_package_list }}"
   when: ansible_os_family == 'Debian'
   tags:
     - install
