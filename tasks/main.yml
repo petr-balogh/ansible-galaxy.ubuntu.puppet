@@ -1,5 +1,4 @@
 ---
----
 - name: Install PuppetLabs release RPM for Fedora or EL derivatives
   yum:name="{{ item }}.noarch.rpm" state={{ puppet_release_package_state }}
   with_item:
