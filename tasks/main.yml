@@ -46,6 +46,6 @@
     - service
 
 - name: Force run of puppet agent
-  command: /usr/bin/puppet agent apply --test --server={{ puppet_master }} --environment={{ puppet_environment }}
+  command: /usr/bin/puppet agent apply --test --server={{ puppet_master }} --environment={{ puppet_environment }} --waitforcert {{ puppet_waitforcert }}
   tags:
     - run
