@@ -1,8 +1,72 @@
 ---
-- name: install puppet
-  sudo: yes
-  action: apt pkg="{{item}}" state=present update_cache=yes
+- name: Install PuppetLabs release RPM for Fedora or EL derivatives
+  yum: name="{{ item }}.noarch.rpm" state={{ puppet_release_package_state }}
   with_items:
-      - "{{puppet_package_name}}"
-  tags: puppet
+    - "{{ puppet_release_rpm_baseurl }}/puppetlabs-release-{% if ansible_distribution == 'Fedora' %}fedora{% else %}el{% endif %}-{{ ansible_distribution_version.split('.')[0] }}"
+  when: ansible_os_family == 'RedHat'
+  tags:
+    - repo
+    - install
+    - packages
 
+- name: Install PuppetLabs release DEB for Debian derivates
+  apt: pkg=puppet state={{ item }} update_cache=yes
+  with_items:
+    - "{{ puppet_release_rpm_baseurl }}/puppetlabs-release-{{ ansible_distribution_release }}.deb"
+  when: ansible_os_family == 'Debian'
+  tags:
+    - repo
+    - install
+    - packages
+
+- name: Install puppet via yum
+  yum: name={{ item }} state={{ puppet_package_state }}
+  with_items:
+    - "{{ puppet_package_list }}"
+  when: ansible_os_family == 'RedHat'
+  tags:
+    - install
+    - packages
+
+- name: Install puppet via apt
+  apt: pkg={{ item }} state={{ puppet_package_state }} update_cache=yes
+  with_items:
+    - "{{ puppet_package_list }}"
+  when: ansible_os_family == 'Debian'
+  tags:
+    - install
+    - packages
+
+- name: Disable puppet service
+  service: name=puppet enabled=no state=stopped
+  tags:
+    - install
+    - service
+    - disable
+
+- name: Enable puppet service
+  service: name=puppet enabled=yes state=started
+  tags:
+    - install
+    - service
+    - enable
+
+# The puppet agent return codes are interesting
+#
+# 0 = no changes
+# 1 = puppet run already in progress
+# 2 = changes
+# 4 = failures during execution
+# 6 = changes and failures
+#
+# https://github.com/ansible/ansible/blob/devel/test/playbook-failed_when.yml
+# https://github.com/ansible/ansible/blob/devel/test/playbook-changed_when.yml
+#
+# Credit to Alex Schultz github.com/mwhahaha
+
+- name: Force run of puppet agent
+  command: /usr/bin/puppet agent apply --test --color=false --server={{ puppet_master }} --environment={{ puppet_environment }} --waitforcert {{ puppet_waitforcert }}
+  register: puppet_agent_apply
+  failed_when: not puppet_agent_apply.rc in [0, 2]
+  tags:
+    - run

@@ -1,14 +1,23 @@
 ---
 galaxy_info:
   author: Vlatko Kosturjak
-  description: Installs puppet on ubuntu
+  description: Install and initialize puppet agent on debian and fedora derivates
   company: kost
   license: BSD
   min_ansible_version: 1.5
   platforms:
+  - name: Debian
+    versions:
+    - all
   - name: Ubuntu
     versions:
-    - trusty
+    - all
+  - name: EL
+    versions:
+    - all
+  - name: Fedora
+    versions:
+    - all
   categories:
   - system
   - packaging
