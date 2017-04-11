@@ -39,6 +39,9 @@
 
 - name: Disable puppet service
   service: name=puppet enabled=no state=stopped
+  register: puppet_disable_result
+  # when puppet is not installed it shouldn't fail with condition bellow
+  failed_when: "puppet_disable_result|failed and ('find' not in puppet_disable_result.msg and 'found' not in puppet_disable_result.msg)"
   tags:
     - install
     - service
